@@ -209,6 +209,11 @@ class MusicGui:
                 except:
                     logger.critical("File not Found")
 
+    def folder_org(self, dstfolder):
+        """
+        Esta funcion se encarga de cear, mover y organizar la musica que tengas siempre que haya metadatos
+        """
+
 
 
 def main():
