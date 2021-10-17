@@ -14,7 +14,7 @@ import shutil
 from shutil import move
 import subprocess as sp
 import webbrowser
-import pathlib
+import patoolib
 from pyunpack import Archive
 
 #----Logging config----#
@@ -198,11 +198,14 @@ class MusicGui:
         for zipfile in listdir(directory):
             if zipfile[-3:] == '.7z':
                 try:
-                    with py7zr.SevenZipFile(zipfile, mode='r') as z:
+                    with py7zr.SevenZipFile(join(directory, zipfile), mode='r') as z:
                         z.extractall(path=directory)
+                    # patoolib.extract_archive(join(directory, zipfile))
+
+                    # Archive(zipfile).extractall(join(directory, zipfile))
                     logger.warning("Deleting compressed file {}".format(join(directory, zipfile)))
-                    
-                    # os.remove(join(directory, zipfile))
+                
+                    os.remove(join(directory, zipfile))
                 except:
                     logger.critical("File not Found")
 
