@@ -130,12 +130,14 @@ class MusicGui:
             if self.zip_var.get():
                 self.zip_files(self.fuente_var.get())
                 self.move_music_out(self.fuente_var.get())
+                self.folder_org(self.fuente_var.get())
             
         elif not self.same_folder_var.get():
             self.move_music_dst()
             if self.zip_var.get():
                 self.zip_files(self.dest_var.get())
                 self.move_music_out(self.dest_var.get())
+                self.folder_org(self.dest_var.get())
 
     def move_music_dst(self):
         """Funcion que mueve a su destino final los archivos a organizar. 
@@ -213,7 +215,79 @@ class MusicGui:
         """
         Esta funcion se encarga de cear, mover y organizar la musica que tengas siempre que haya metadatos
         """
+        directory = dstfolder
+        for file in os.listdir(directory):
+            if file[-4:] == '.mp3' or file[-4:] == '.m4a':
+                full_path = directory + "\\" + file
+                # print("Your full path for this file is {}".format(full_path))
+                logger.info("Your full path for this file is {}".format(full_path))
+                # print(file[-3:])
+                # print(file)
+                tag = TinyTag.get(full_path)
+                try:
+                    # print(type(tag.albumartist))
+                    if tag.albumartist is None:
+                        artist_dir_path = directory + "\\" + tag.artist
+                        artist_dir_path = artist_dir_path.strip()
+                    else:
+                        artist_dir_path = directory + "\\" + tag.albumartist
+                        artist_dir_path = artist_dir_path.strip()
+                    album = tag.album
+                    album = album.replace(':', ' ')
+                    album = album.replace('/', ' ')
+                    album = album.replace('"', ' ')
+                    album = album.replace('|', ' ')
+                    album = album.replace('?', ' ')
+                    # album = album.replace('*', ' ')
+                    album = album.replace('...', ' ')
+                    
 
+                    album_dir_path = directory + "\\" + album
+                    album_dir_path = album_dir_path.strip()
+                    final_move = artist_dir_path + "\\" + album
+                    final_move = final_move.strip()
+
+                    # print(artist_dir_path)
+                    logger.info("Artist dir: {}".format(artist_dir_path))
+                    # print(album_dir_path)
+                    logger.info("Album dir: {}".format(album_dir_path))
+                    # print(final_move)
+                    logger.info("Final destination: {}".format(final_move))
+                    if not os.path.exists(album_dir_path) and not os.path.exists(final_move):
+                        # if ':' in album_dir_path:
+                        #     album_dir_path = album_dir_path.replace(':', ' ')
+                        os.makedirs(album_dir_path)
+                        # print("Directory created for album")
+                        logger.debug("Directory created for album")
+
+                    if not os.path.exists(artist_dir_path):
+                        os.makedirs(artist_dir_path)
+                        # print("Directory created for artist")
+                        logger.debug("Directory created for artist")
+                    
+                    if os.path.exists(album_dir_path):
+                        shutil.move(full_path, album_dir_path)
+                        # print("Song moved to album dir")
+                        logger.debug("Song moved to album dir")
+                    elif os.path.exists(final_move):
+                        shutil.move(full_path, final_move)
+                        # print("Song moved to album dir inside artist dir")
+                        logger.warning("Song moved to album dir inside artist dir")
+                        continue
+
+                    if os.path.exists(artist_dir_path):
+                        shutil.move(album_dir_path, final_move)
+                        # print("Album moved to artist dir")
+                        logger.warning("Album moved to artist dir")
+
+                    
+                    # print(tag.artist)
+                    # print(tag.album)
+                    print("----------------------------------")
+                except:
+                    # print("Could not create folder for the file {} or move it correctly".format(full_path))
+                    logger.error("Could not create folder for the file {} or move it correctly".format(full_path))
+            
 
 
 def main():
