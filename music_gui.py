@@ -131,6 +131,9 @@ class MusicGui:
                 self.zip_files(self.fuente_var.get())
                 self.move_music_out(self.fuente_var.get())
                 self.folder_org(self.fuente_var.get())
+            else:
+                self.move_music_out(self.fuente_var.get())
+                self.folder_org(self.fuente_var.get())
             
         elif not self.same_folder_var.get():
             self.move_music_dst()
